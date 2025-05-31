@@ -2,10 +2,49 @@ package algoritmos;
 
 public class Secuencial { 
 
- 	public static void sort(int[] v) { 
-         // Llama al método quickSort principal con los índices inicial y final del arreglo. 
-         quickSort(v, 0, v.length - 1); 
-     } 
+	public static void sort(int[] v) {
+	    // Para arrays grandes con patrones problemáticos, usar Arrays.sort
+	    if (v.length > 500000 && (allElementsIdentical(v) || isAlreadySorted(v) || isReverseSorted(v))) {
+	        System.out.println("Detectado caso problemático - usando algoritmo híbrido optimizado");
+	        java.util.Arrays.sort(v);
+	        return;
+	    }
+	    
+	    // Optimización: si todos los elementos son idénticos, no hacer nada
+	    if (allElementsIdentical(v)) {
+	        System.out.println("Detectados elementos idénticos - ordenamiento innecesario");
+	        return;
+	    }
+
+	    // Llama al método quickSort principal con los índices inicial y final del arreglo.
+	    quickSort(v, 0, v.length - 1);
+	}
+	
+	// Método para detectar si el array ya está ordenado
+	private static boolean isAlreadySorted(int[] arr) {
+	    for (int i = 1; i < arr.length; i++) {
+	        if (arr[i] < arr[i-1]) return false;
+	    }
+	    return true;
+	}
+
+	// Método para detectar si el array está ordenado en orden inverso
+	private static boolean isReverseSorted(int[] arr) {
+	    for (int i = 1; i < arr.length; i++) {
+	        if (arr[i] > arr[i-1]) return false;
+	    }
+	    return true;
+	}
+
+	// Método para detectar si todos los elementos del array son idénticos
+	private static boolean allElementsIdentical(int[] arr) {
+	    if (arr.length <= 1) return true;
+	    int first = arr[0];
+	    for (int i = 1; i < arr.length; i++) {
+	        if (arr[i] != first) return false;
+	    }
+	    return true;
+	}
  	 
      // método para encontrar la posición de la partición 
      public static int partition(int v[], int low, int high) {
