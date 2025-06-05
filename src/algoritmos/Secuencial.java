@@ -2,97 +2,115 @@ package algoritmos;
 
 public class Secuencial { 
 
-	public static void sort(int[] v) {
-	    // Para arrays grandes con patrones problemáticos, usar Arrays.sort
-	    if (v.length > 500000 && (allElementsIdentical(v) || isAlreadySorted(v) || isReverseSorted(v))) {
-	        System.out.println("Detectado caso problemático - usando algoritmo híbrido optimizado");
-	        java.util.Arrays.sort(v);
-	        return;
-	    }
-	    
-	    // Optimización: si todos los elementos son idénticos, no hacer nada
-	    if (allElementsIdentical(v)) {
-	        System.out.println("Detectados elementos idénticos - ordenamiento innecesario");
-	        return;
-	    }
+    // Este es el método principal que llaman desde afuera para ordenar un array de forma secuencial
+    public static void sort(int[] v) {
+        // 	Si el array es muy grande y tiene patrones problemáticos,
+    	//  mejor usamos el algoritmo híbrido de Java
+        if (v.length > 500000 && (allElementsIdentical(v) || isAlreadySorted(v) || isReverseSorted(v))) {
+            System.out.println("Detectado caso problemático - usando algoritmo híbrido optimizado");
+            java.util.Arrays.sort(v); // Java sabe manejar estos casos mejor que nosotros
+            return;
+        }
+        
+        // Si todos los elementos son iguales, nos ahorramos todo el trabajo
+        if (allElementsIdentical(v)) {
+            System.out.println("Detectados elementos idénticos - ordenamiento innecesario");
+            return; // No hay nada que ordenar
+        }
 
-	    // Llama al método quickSort principal con los índices inicial y final del arreglo.
-	    quickSort(v, 0, v.length - 1);
-	}
-	
-	// Método para detectar si el array ya está ordenado
-	private static boolean isAlreadySorted(int[] arr) {
-	    for (int i = 1; i < arr.length; i++) {
-	        if (arr[i] < arr[i-1]) return false;
-	    }
-	    return true;
-	}
+        // Llamamos al metodo recursivo con todo el rango del array (desde 0 hasta length-1)
+        quickSort(v, 0, v.length - 1);
+    }
+    
+    // Metodo que verifica si el array ya esta ordenado de menor a mayor
+    private static boolean isAlreadySorted(int[] arr) {
+        // Recorremos comparando cada elemento con su anterior
+        for (int i = 1; i < arr.length; i++) {
+            // Si encontramos uno menor que el anterior, no está ordenado
+            if (arr[i] < arr[i-1]) return false;
+        }
+        return true; // Si llegamos aqui, esta perfectamente ordenado
+    }
 
-	// Método para detectar si el array está ordenado en orden inverso
-	private static boolean isReverseSorted(int[] arr) {
-	    for (int i = 1; i < arr.length; i++) {
-	        if (arr[i] > arr[i-1]) return false;
-	    }
-	    return true;
-	}
+    // Verifica si el array esta ordenado al reves (de mayor a menor)
+    private static boolean isReverseSorted(int[] arr) {
+        // Comparamos cada elemento con el anterior
+        for (int i = 1; i < arr.length; i++) {
+            // Si uno es mayor que el anterior, no esta en orden descendente
+            if (arr[i] > arr[i-1]) return false;
+        }
+        return true; // Esta ordenado inversamente
+    }
 
-	// Método para detectar si todos los elementos del array son idénticos
-	private static boolean allElementsIdentical(int[] arr) {
-	    if (arr.length <= 1) return true;
-	    int first = arr[0];
-	    for (int i = 1; i < arr.length; i++) {
-	        if (arr[i] != first) return false;
-	    }
-	    return true;
-	}
- 	 
-     // método para encontrar la posición de la partición 
-     public static int partition(int v[], int low, int high) {
+    // Comprueba si todos los elementos del array son exactamente iguales
+    private static boolean allElementsIdentical(int[] arr) {
+        // Arrays vacios o de un elemento se consideran "identicos"
+        if (arr.length <= 1) return true;
+        
+        int first = arr[0]; // Usamos el primer elemento como referencia
+        // Comparamos todos los demás elementos con el primero
+        for (int i = 1; i < arr.length; i++) {
+            // Si encontramos uno diferente, no son todos iguales
+            if (arr[i] != first) return false;
+        }
+        return true; // Todos son iguales al primero
+    }
+      
+    // Metodo que encuentra la posicion donde particionar el array
+    public static int partition(int v[], int low, int high) {
 
-         // elige el elemento más a la derecha como pivote 
-         int pivot = v[high];
+        // Elegimos el ultimo elemento como pivote
+        int pivot = v[high];
 
-         // puntero para el elemento mayor 
-         int i = (low - 1);
+        // Este puntero nos ayuda a mantener los elementos menores al pivote a la izquierda
+        int i = (low - 1);
 
-         // recorre todos los elementos 
-         // compara cada elemento con el pivote 
-         for (int j = low; j < high; j++) {
-             if (v[j] <= pivot) { 
+        // Recorremos todos los elementos excepto el pivote
+        for (int j = low; j < high; j++) {
+            // Si el elemento actual es menor o igual al pivote
+            if (v[j] <= pivot) { 
 
-                 // si se encuentra un elemento menor que el pivote 
-                 // intercámbialo con el elemento mayor apuntado por i 
-                 i++; 
+                // Encontramos un elemento que va a la izquierda, asi que
+                // incrementamos el puntero de elementos menores
+                i++; 
 
-                 // intercambiando el elemento en i con el elemento en j 
-                 int temp = v[i]; 
-                 v[i] = v[j]; 
-                 v[j] = temp; 
-             } 
-         } 
+                // Intercambiamos el elemento actual con el que esta en la posicion i
+                // Esto mantiene todos los elementos <= pivote a la izquierda
+                int temp = v[i]; 
+                v[i] = v[j]; 
+                v[j] = temp; 
+            } 
+        } 
 
-         // intercambia el elemento pivote con el elemento mayor especificado por i 
-         int temp = v[i + 1]; 
-         v[i + 1] = v[high];
-         v[high] = temp;
-         
-         // devuelve la posición desde donde se realizó la partición 
-         return (i + 1); 
-     } 
+        // Ahora ponemos el pivote en su posicion correcta
+        // Todos los elementos a su izquierda son menores o iguales
+        // Todos los de la derecha son mayores
+        int temp = v[i + 1]; 
+        v[i + 1] = v[high]; // El pivote va en i+1
+        v[high] = temp;
+        
+        // Retornamos la posicion donde quedo el pivote
+        // Esta es la línea divisoria para las proximas llamadas recursivas
+        return (i + 1); 
+    } 
 
-     public static void quickSort(int v[], int low, int high) {
-         if (low < high) {
+    // El metodo recursivo que implementa el algoritmo quicksort
+    public static void quickSort(int v[], int low, int high) {
+        // Condición de parada: si low >= high, significa que no hay elementos que ordenar
+        // (el subarreglo tiene 0 o 1 elemento)
+        if (low < high) {
 
-             // encuentra el elemento pivote de tal manera que 
-             // los elementos menores que el pivote estén a la izquierda 
-             // y los elementos mayores que el pivote estén a la derecha 
-             int pi = partition(v, low, high);
+            // Particionamos el array y obtenemos la posicion del pivote
+            // Después de esto, el pivote estara en su posición final correcta
+            int pi = partition(v, low, high);
 
-             // llamada recursiva a la izquierda del pivote 
-             quickSort(v, low, pi - 1);
+            // Ahora aplicamos divide y vencerás:
+            // Ordenamos recursivamente la parte izquierda (elementos menores al pivote)
+            quickSort(v, low, pi - 1);
 
-             // llamada recursiva a la derecha del pivote 
-             quickSort(v, pi + 1, high);
-         } 
-     } 
- }
+            // Y tambien ordenamos recursivamente la parte derecha (elementos mayores al pivote)
+            quickSort(v, pi + 1, high);
+        } 
+        // Si low no es menor que high, la recursion termina aqui
+    } 
+}
